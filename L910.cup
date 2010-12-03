@@ -1,0 +1,38 @@
+package com.compiladores;
+
+import java_cup.runtime.*;
+
+scan with {: return lexer.next_token(); :};
+
+parser code {: 
+  public boolean syntaxErrors;
+
+  Lexer lexer;
+
+  public parser(Lexer lex) {
+      super(lex);
+      lexer = lex;
+  }
+
+  
+  public void report_error(String message, Object info) {
+    syntaxErrors = true;
+    
+    System.out.print(message);
+    
+    if ( !(info instanceof Symbol) ) return;
+    Symbol symbol = (Symbol) info;
+    
+    if ( symbol.left < 0 || symbol.right < 0 ) return;
+    
+    System.out.println(" at line "+symbol.left+", column "+symbol.right);
+  }
+:};
+
+terminal        IDENT, INT;
+non terminal    type_dec, type;
+
+type_dec        ::= INT IDENT
+                    | INT IDENT type_dec;
+
+
