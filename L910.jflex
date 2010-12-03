@@ -47,6 +47,11 @@ Ident                = [:jletter:] { Semi_Ident }*
 /* Palavras reservadas */
 
 "int"                       { System.out.println("Tipo INT"); return symbol(sym.INT); }
+"boolean"                   { System.out.println("Tipo BOOLEAN"); return symbol(sym.BOOLEAN); }
+
+/* Simbolos */
+","                         { System.out.println("VIRGULA"); return symbol(sym.VIRGULA); }
+";"                         { System.out.println("PTO_VIRGULA"); return symbol(sym.PTO_VIRGULA); }
 
 /* regras */
 { Ident }                   { System.out.println("eh um IDENT"); return symbol(sym.IDENT, yytext()); }
@@ -56,30 +61,3 @@ Ident                = [:jletter:] { Semi_Ident }*
 .|\n                        { System.out.println(" --- FIM ---"); throw new Error("Illegal character <"+
                                 yytext()+">"); }
 
-/*
-
-LineTerminator        = \r|\n|\r\n
-InputCharacter        = [^\r\n]
-WhiteSpace            = {LineTerminator} | [ \t\f]
-Sobrenome_unico       = [:jletter:]+
-
-%state STRNIG
-
-%%
-
-/* Palavras reservadas */
-<YYINITIAL> Plinio                  { return symbol(sym.PLINIO); }
-
-/* Regras */
-<YYINITIAL> {
-    /* Sobrenome */
-    { Sobrenome_unico }             { return symbol(sym.SOBRENOME); }
-}
-
-
-{ WhiteSpace }                             { System.out.println("Pegou: EOF");/* Ignora */ }
-
-/* ERRO ! ! ! */
-.|\n                                { throw new Error("Illegal character <"+
-                                                            yytext()+">"); }
-*/
