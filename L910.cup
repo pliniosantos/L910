@@ -29,14 +29,3 @@ parser code {:
   }
 :};
 
-terminal        IDENT, INT, BOOLEAN, PTO_VIRGULA, VIRGULA;
-non terminal    blk_var_decs, var_dec, names, type;
-
-blk_var_decs   ::= var_dec blk_var_decs
-                   | var_dec;
-var_dec        ::= type names PTO_VIRGULA;
-names          ::= IDENT VIRGULA names
-                   | IDENT;
-type           ::= INT
-                   | BOOLEAN;
-
