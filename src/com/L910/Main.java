@@ -15,6 +15,7 @@ public class Main {
 		File file = new File(args[0]);
 		InputStream is = new FileInputStream(file);
 		new parser(new Lexer(is)).parse();
+		System.out.println("Parser: OK");
 
 	}
 

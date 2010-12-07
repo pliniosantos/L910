@@ -29,3 +29,233 @@ parser code {:
   }
 :};
 
+/* Terminais */
+terminal INT;
+terminal BOOLEAN;
+terminal STRING;
+terminal VOID;
+terminal Boolean BOOLCONST;
+terminal Integer INTCONST;
+terminal String IDENT;
+terminal String STRING_LITERAL;
+terminal IF;
+terminal ELSE;
+terminal WHILE;
+terminal REF;
+terminal READ;
+terminal READLN;
+terminal PRINT;
+terminal PRINTLN;
+terminal INC;
+terminal DEC;
+terminal RETURN;
+terminal VIRGULA;
+terminal PTO_VIRGULA;
+terminal L_PAREN;
+terminal R_PAREN;
+terminal L_CHAVE;
+terminal R_CHAVE;
+terminal L_COLCH;
+terminal R_COLCH;
+terminal PLUS;
+terminal MINUS;
+terminal TIMES;
+terminal DIV;
+terminal RES;
+terminal ATR;
+terminal EQ;
+terminal LT;
+terminal LEQ;
+terminal GT;
+terminal GEQ;
+terminal NE;
+terminal NOT;
+terminal OR;
+terminal AND;
+
+/* Nao Terminais */
+non terminal programa;
+non terminal var_decs;
+non terminal var_list;
+non terminal var_dec;
+non terminal var_dec_id;
+non terminal var_init;
+non terminal expression;
+non terminal vect_init;
+non terminal type;
+non terminal func_dec;
+non terminal func_header;
+non terminal func_body;
+non terminal func_d;
+non terminal param_list;
+non terminal param;
+non terminal block;
+non terminal cond_express;
+non terminal assignment;
+non terminal left_hand_side;
+non terminal assignment_op;
+non terminal identifier;
+non terminal exp_list;
+non terminal relop;
+non terminal addop;
+non terminal multop;
+non terminal unyop;
+non terminal block_statements;
+non terminal block_statement;
+non terminal statement;
+non terminal if_then_st;
+non terminal if_then_else_st;
+non terminal while_st;
+non terminal func_call;
+non terminal express_st;
+non terminal return_statement;
+
+precedence right ATR;
+precedence left EQ, LT, GT, LEQ, GEQ, NE;
+precedence left PLUS, MINUS, OR;
+precedence left TIMES, DIV, AND;
+
+start with programa;
+
+programa ::=          var_decs func_dec
+            |         func_dec
+            ;
+
+var_decs  ::=         type var_list PTO_VIRGULA
+            |         var_decs type var_list PTO_VIRGULA
+            ;
+
+var_list ::=          var_dec
+            |         var_list VIRGULA var_dec
+            ;
+
+var_dec ::=           var_dec_id
+            |         var_dec_id ATR var_init
+            ;
+
+var_dec_id ::=        IDENT
+            |         var_dec_id L_COLCH INTCONST R_COLCH
+            ;
+
+var_init ::=          expression
+            |         vect_init
+            ;
+
+type ::=              INT
+            |         BOOLEAN
+            |         STRING
+            |         VOID
+            ;
+
+func_dec ::=          func_header func_body
+            |         func_dec func_header func_body
+            ;
+
+func_header ::=       type func_d
+            ;
+
+func_d ::=            IDENT L_PAREN param_list R_PAREN
+            |         IDENT L_PAREN R_PAREN
+            ;
+
+param_list ::=        param
+            |         param_list VIRGULA param
+            ;
+
+param ::=             type var_dec_id
+            ;
+
+func_body ::=         block
+            |         PTO_VIRGULA
+            ;
+
+block ::=             L_CHAVE block_statements R_CHAVE
+            ;
+
+block_statements ::=  block_statement
+            |         block_statements block_statement
+            ;
+
+block_statement ::=   var_decs
+            |         statement
+            ;
+
+statement ::=         /* vazio */
+            |         if_then_st
+            |         if_then_else_st
+            |         while_st
+            |         assignment
+            |         expression PTO_VIRGULA
+            |         return_statement
+            ;
+
+if_then_st ::=        IF L_PAREN expression R_PAREN statement
+            ;
+
+if_then_else_st ::=   IF L_PAREN expression R_PAREN statement
+                              ELSE statement
+            ;
+
+while_st ::=          WHILE L_PAREN expression R_PAREN statement
+            ;
+
+func_call ::=         IDENT L_PAREN exp_list R_PAREN PTO_VIRGULA
+            ;
+
+assignment ::=        left_hand_side ATR expression PTO_VIRGULA
+            ;
+
+left_hand_side ::=    IDENT
+            ;
+
+return_statement ::=  RETURN expression PTO_VIRGULA
+            ;
+
+expression ::=        INTCONST
+            |         IDENT
+            |         STRING_LITERAL
+            |         BOOLCONST
+            |         identifier L_PAREN exp_list R_PAREN
+            |         expression relop expression %prec EQ
+            |         expression addop expression %prec PLUS
+            |         expression multop expression %prec TIMES
+            |         unyop expression
+            |         L_PAREN expression R_PAREN
+            ;
+
+identifier ::=        IDENT
+            ;
+
+exp_list ::=          expression
+            |         exp_list VIRGULA expression
+            |
+            ;
+
+relop ::=             LT
+            |         GT
+            |         LEQ
+            |         GEQ
+            |         NE
+            ;
+
+addop ::=             PLUS
+            |         MINUS
+            |         OR
+            ;
+
+multop ::=            TIMES
+            |         DIV
+            |         AND
+            ;
+
+unyop ::=            PLUS
+            |        MINUS 
+            |        NOT
+            ;
+
+
+
+
+
+
+

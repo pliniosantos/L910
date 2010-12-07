@@ -44,9 +44,12 @@ Ident                = [:jletter:] { Semi_Ident }*
 InputCharacter       = [^\r\n]
 TraditionalComment   = "/*" [^*] ~"*/" | "/*" "*"+ "/"
 EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}
+IntConst             = 0 | [1-9][0-9]*
 
 /* Comentarios */
-Commentario = {TraditionalComment} | {EndOfLineComment}
+Comentario = {TraditionalComment} | {EndOfLineComment}
+
+%state STRING
 
 %%
 
@@ -55,8 +58,8 @@ Commentario = {TraditionalComment} | {EndOfLineComment}
 "boolean"                   { return symbol(sym.BOOLEAN); }
 "string"                    { return symbol(sym.STRING); }
 "void"                      { return symbol(sym.VOID); }
-"true"                      { return symbol(sym.TRUE); }
-"false"                     { return symbol(sym.FALSE); }
+"true"                      { return symbol(sym.BOOLCONST); }
+"false"                     { return symbol(sym.BOOLCONST); }
 "if"                        { return symbol(sym.IF); }
 "else"                      { return symbol(sym.ELSE); }
 "while"                     { return symbol(sym.WHILE); }
@@ -91,14 +94,30 @@ Commentario = {TraditionalComment} | {EndOfLineComment}
 "=="                        { return symbol(sym.EQ); }
 "<"                         { return symbol(sym.LT); }
 "<="                        { return symbol(sym.LEQ); }
-">"                         { return symbol(sym.MT); }
-">="                        { return symbol(sym.MEQ); }
+">"                         { return symbol(sym.GT); }
+">="                        { return symbol(sym.GEQ); }
+"!="                        { return symbol(sym.NE); }
 "!"                         { return symbol(sym.NOT); }
 "||"                        { return symbol(sym.OR); }
 "&&"                        { return symbol(sym.AND); }
 
 /* regras */
 { Ident }                   { return symbol(sym.IDENT, yytext()); }
+{ IntConst }                { return symbol(sym.INTCONST, new Integer(Integer.parseInt(yytext()))); }
+{ Comentario }              { /* Ignora */ }
+
+<STRING> {
+  \"                             { yybegin(YYINITIAL); 
+                                   return symbol(sym.STRING_LITERAL, 
+                                   string.toString()); }
+  [^\n\r\"\\]+                   { string.append( yytext() ); }
+  \\t                            { string.append('\t'); }
+  \\n                            { string.append('\n'); }
+
+  \\r                            { string.append('\r'); }
+  \\\"                           { string.append('\"'); }
+  \\                             { string.append('\\'); }
+}
 
 /* FIM */
 { WhiteSpace }              { /* Ignora */ }
