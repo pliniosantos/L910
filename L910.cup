@@ -61,7 +61,7 @@ terminal PLUS;
 terminal MINUS;
 terminal TIMES;
 terminal DIV;
-terminal RES;
+terminal MOD;
 terminal ATR;
 terminal EQ;
 terminal LT;
@@ -77,12 +77,14 @@ terminal AND;
 non terminal programa;
 non terminal var_decs;
 non terminal var_list;
+non terminal var_decs_opt;
 non terminal var_dec;
 non terminal var_dec_id;
 non terminal var_init;
 non terminal expression;
 non terminal vect_init;
 non terminal type;
+non terminal primitive_type;
 non terminal func_dec;
 non terminal func_header;
 non terminal func_body;
@@ -94,68 +96,134 @@ non terminal cond_express;
 non terminal assignment;
 non terminal left_hand_side;
 non terminal assignment_op;
-non terminal identifier;
+non terminal name;
+non terminal simple_name;
+non terminal identifier_op;
 non terminal exp_list;
 non terminal relop;
 non terminal addop;
 non terminal multop;
 non terminal unyop;
+non terminal block_statements_opt;
 non terminal block_statements;
 non terminal block_statement;
 non terminal statement;
 non terminal if_then_st;
 non terminal if_then_else_st;
+non terminal statement_no_short_if;
 non terminal while_st;
-non terminal func_call;
 non terminal express_st;
 non terminal return_statement;
+non terminal statement_without_trailing_substatement;
+non terminal if_then_else_statement_no_short_if;
+non terminal while_statement_no_short_if;
+non terminal empty_statement;
+non terminal expression_statement;
+non terminal statement_expression;
+non terminal method_invocation;
+non terminal argument_list_opt;
+non terminal argument_list;
+non terminal unary_expression;
+non terminal unary_expression_not_plus_minus;
+non terminal multiplicative_expression;
+non terminal additive_expression;
+non terminal relational_expression;
+non terminal shift_expression;
+non terminal equality_expression;
+non terminal and_expression;
+non terminal conditional_and_expression;
+non terminal conditional_or_expression;
+non terminal conditional_expression;
+non terminal assignment_expression;
+non terminal assignment_operator;
+non terminal array_access;
+non terminal reference_type;
+non terminal ag_opt;
+non terminal var_def;
+non terminal type_dec_opt;
+non terminal type_dec;
+non terminal field_dec;
+non terminal var_dec_init;
+non terminal array_init;
+non terminal param_list_opt;
+non terminal arg_list_opt;
+non terminal arg_list;
+non terminal func_call;
+non terminal loc_var_dec_statement;
+non terminal loc_var_dec;
+non terminal primary;
+non terminal unary_expression_not;
+non terminal literal;
+non terminal compilation_unit;
+non terminal type_decs;
+non terminal v_lit;
+non terminal vet_var_init;
+non terminal expression_opt;
 
-precedence right ATR;
-precedence left EQ, LT, GT, LEQ, GEQ, NE;
-precedence left PLUS, MINUS, OR;
-precedence left TIMES, DIV, AND;
 
 start with programa;
 
-programa ::=          var_decs func_dec
+programa ::=          compilation_unit
+            ;
+
+compilation_unit ::= type_dec_opt
+            ;
+
+type_dec_opt ::=
+            |         type_decs
+            ;
+
+type_decs ::=         type_dec
+            |         type_decs type_dec
+            ;
+
+type_dec ::=          field_dec
             |         func_dec
+            |         PTO_VIRGULA
             ;
 
-var_decs  ::=         type var_list PTO_VIRGULA
-            |         var_decs type var_list PTO_VIRGULA
+field_dec ::=         type var_decs PTO_VIRGULA
             ;
 
-var_list ::=          var_dec
-            |         var_list VIRGULA var_dec
+var_decs ::=          var_dec
+            |         var_decs VIRGULA var_dec
             ;
 
 var_dec ::=           var_dec_id
-            |         var_dec_id ATR var_init
+            |         var_dec_id ATR var_dec_init
             ;
 
 var_dec_id ::=        IDENT
-            |         var_dec_id L_COLCH INTCONST R_COLCH
+            |         var_dec_id v_lit
+            ;
+
+v_lit ::=             L_COLCH INTCONST R_COLCH
             ;
 
 var_init ::=          expression
-            |         vect_init
+            |         array_init
             ;
 
-type ::=              INT
-            |         BOOLEAN
-            |         STRING
-            |         VOID
+array_init ::=        L_CHAVE vet_var_init R_CHAVE
+            |         L_CHAVE  R_CHAVE
+            ;
+
+vet_var_init ::=      var_init
+            |         vet_var_init VIRGULA var_init
             ;
 
 func_dec ::=          func_header func_body
-            |         func_dec func_header func_body
             ;
 
 func_header ::=       type func_d
+            |         VOID func_d
             ;
 
-func_d ::=            IDENT L_PAREN param_list R_PAREN
-            |         IDENT L_PAREN R_PAREN
+func_d ::=            IDENT L_PAREN param_list_opt R_PAREN
+            ;
+
+param_list_opt ::=
+            |         param_list
             ;
 
 param_list ::=        param
@@ -169,93 +237,180 @@ func_body ::=         block
             |         PTO_VIRGULA
             ;
 
-block ::=             L_CHAVE block_statements R_CHAVE
+func_call ::=         name L_PAREN arg_list_opt R_PAREN
+            ;
+
+arg_list_opt ::=
+            |         arg_list
+            ;
+
+arg_list ::=          expression
+            |         arg_list VIRGULA expression
+            ;
+
+block ::=             L_CHAVE block_statements_opt R_CHAVE
+            ;
+
+block_statements_opt ::=
+            |         block_statements
             ;
 
 block_statements ::=  block_statement
             |         block_statements block_statement
             ;
 
-block_statement ::=   var_decs
+block_statement ::=   loc_var_dec_statement
             |         statement
             ;
 
-statement ::=         /* vazio */
+loc_var_dec_statement ::=
+                      loc_var_dec PTO_VIRGULA
+            ;
+
+loc_var_dec ::=       type var_decs
+            ;
+
+statement ::=         statement_without_trailing_substatement
             |         if_then_st
             |         if_then_else_st
             |         while_st
-            |         assignment
-            |         expression PTO_VIRGULA
+            ;
+
+statement_no_short_if ::=
+                      statement_without_trailing_substatement
+            |         if_then_else_statement_no_short_if
+            |         while_statement_no_short_if
+	        ;                      
+
+statement_without_trailing_substatement ::=
+                      block
+            |         empty_statement
+            |         expression_statement
             |         return_statement
+            ;
+
+empty_statement ::=   PTO_VIRGULA
             ;
 
 if_then_st ::=        IF L_PAREN expression R_PAREN statement
             ;
 
-if_then_else_st ::=   IF L_PAREN expression R_PAREN statement
+if_then_else_st ::=   IF L_PAREN expression R_PAREN statement_no_short_if
                               ELSE statement
+            ;
+
+if_then_else_statement_no_short_if ::=
+                      IF L_PAREN expression R_PAREN statement_no_short_if
+                              ELSE statement_no_short_if
+            ;
+
+expression_statement ::=
+		      statement_expression PTO_VIRGULA
+            ;
+
+statement_expression ::=
+                      assignment
             ;
 
 while_st ::=          WHILE L_PAREN expression R_PAREN statement
             ;
 
-func_call ::=         IDENT L_PAREN exp_list R_PAREN PTO_VIRGULA
+while_statement_no_short_if ::=
+                      WHILE L_PAREN expression R_PAREN statement_no_short_if
+            ;
+array_access ::=      name L_CHAVE expression R_CHAVE
+            |         primary L_CHAVE expression R_CHAVE
             ;
 
-assignment ::=        left_hand_side ATR expression PTO_VIRGULA
+unary_expression_not ::=
+                      NOT name
+            |         primary
+            |         name
             ;
 
-left_hand_side ::=    IDENT
+unary_expression ::=  PLUS unary_expression
+            |         MINUS unary_expression
+            |         unary_expression_not
             ;
 
-return_statement ::=  RETURN expression PTO_VIRGULA
+multiplicative_expression ::=
+                      unary_expression
+            |         multiplicative_expression TIMES unary_expression
+            |         multiplicative_expression DIV unary_expression
+            |         multiplicative_expression MOD unary_expression
             ;
 
-expression ::=        INTCONST
-            |         IDENT
-            |         STRING_LITERAL
+additive_expression ::=  
+                      multiplicative_expression
+            |         additive_expression PLUS multiplicative_expression
+            |         additive_expression MINUS multiplicative_expression
+            ;
+
+relational_expression ::=
+                      additive_expression
+            |         relational_expression LT additive_expression
+            |         relational_expression GT additive_expression
+            |         relational_expression LEQ additive_expression
+            |         relational_expression GEQ additive_expression
+            ;
+
+equality_expression ::=
+                      relational_expression
+            |         equality_expression EQ relational_expression
+            |         equality_expression NE relational_expression
+            ;
+
+and_expression ::=    equality_expression
+            |         and_expression AND equality_expression
+            ;
+
+conditional_or_expression ::=
+                      and_expression
+            |         conditional_or_expression OR and_expression
+            ;
+
+conditional_expression ::=
+                      conditional_or_expression
+            ;
+
+assignment ::=	      left_hand_side ATR assignment_expression
+            ;
+
+assignment_expression ::=
+                      conditional_expression
+            |         assignment
+            ;
+
+left_hand_side ::=    name
+            |         array_access
+            ;
+
+return_statement ::=  RETURN expression_opt PTO_VIRGULA
+            ;
+
+expression_opt ::=
+            |         expression
+            ;
+
+expression ::=	      assignment_expression
+            ;
+
+name ::=              IDENT
+            ;
+
+type ::=              INT
+            |         BOOLEAN
+            |         STRING
+            ;
+
+literal ::=           INTCONST
             |         BOOLCONST
-            |         identifier L_PAREN exp_list R_PAREN
-            |         expression relop expression %prec EQ
-            |         expression addop expression %prec PLUS
-            |         expression multop expression %prec TIMES
-            |         unyop expression
+            |         STRING
+            ;
+
+primary ::=           literal
             |         L_PAREN expression R_PAREN
+            |         func_call
+            |         array_access
             ;
-
-identifier ::=        IDENT
-            ;
-
-exp_list ::=          expression
-            |         exp_list VIRGULA expression
-            |
-            ;
-
-relop ::=             LT
-            |         GT
-            |         LEQ
-            |         GEQ
-            |         NE
-            ;
-
-addop ::=             PLUS
-            |         MINUS
-            |         OR
-            ;
-
-multop ::=            TIMES
-            |         DIV
-            |         AND
-            ;
-
-unyop ::=            PLUS
-            |        MINUS 
-            |        NOT
-            ;
-
-
-
-
-
-
 

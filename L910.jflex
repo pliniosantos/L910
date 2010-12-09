@@ -87,7 +87,7 @@ Comentario = {TraditionalComment} | {EndOfLineComment}
 "-"                         { return symbol(sym.MINUS); }
 "*"                         { return symbol(sym.TIMES); }
 "/"                         { return symbol(sym.DIV); }
-"%"                         { return symbol(sym.RES); }
+"%"                         { return symbol(sym.MOD); }
 
 /* Operadores logicos */
 "="                         { return symbol(sym.ATR); }
