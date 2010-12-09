@@ -190,7 +190,7 @@ var_decs ::=          var_dec
             ;
 
 var_dec ::=           var_dec_id
-            |         var_dec_id ATR var_dec_init
+            |         var_dec_id ATR var_init
             ;
 
 var_dec_id ::=        IDENT
@@ -405,7 +405,7 @@ type ::=              INT
 
 literal ::=           INTCONST
             |         BOOLCONST
-            |         STRING
+            |         STRING_LITERAL
             ;
 
 primary ::=           literal

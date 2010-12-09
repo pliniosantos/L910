@@ -1,3 +1,29 @@
-int a, b[10];
+int a, c, x, y; //comentario
+boolean b=false, eu=true;
 
-void a(){}
+/* comentario */
+/*
+ comentario
+ grande
+*/
+
+void a(int b){
+  int plinio[1], eu;
+  int b = 1;
+
+  if(a == true) {
+    j = 1 + 3 * t;
+  }
+  while (1) {
+      if(j <= 5 && k != 2) {
+          plinio = 5 + 1;
+      } else {
+          plinio = 0;
+      }
+  }
+
+}
+
+int main(){
+  //a();
+}
